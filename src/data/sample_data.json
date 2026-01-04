@@ -1,0 +1,14 @@
+[
+  {"date":"2024-01-10","symbol":"AAPL","side":"LONG","quantity":10,"price":150.0,"fees":1.0,"pnl":50.0},
+  {"date":"2024-01-20","symbol":"TSLA","side":"SHORT","quantity":2,"price":700.0,"fees":2.0,"pnl":-120.0},
+  {"date":"2024-02-05","symbol":"AAPL","side":"LONG","quantity":5,"price":155.0,"fees":0.5,"pnl":25.0},
+  {"date":"2024-02-14","symbol":"BTC","side":"LONG","quantity":0.01,"price":40000.0,"fees":1.5,"pnl":150.0},
+  {"date":"2024-03-03","symbol":"ETH","side":"LONG","quantity":0.5,"price":3000.0,"fees":0.8,"pnl":75.0},
+  {"date":"2024-04-10","symbol":"AAPL","side":"LONG","quantity":8,"price":160.0,"fees":1.2,"pnl":80.0},
+  {"date":"2024-05-18","symbol":"TSLA","side":"SHORT","quantity":1,"price":720.0,"fees":0.9,"pnl":-50.0},
+  {"date":"2024-06-25","symbol":"AAPL","side":"LONG","quantity":12,"price":170.0,"fees":1.0,"pnl":120.0},
+  {"date":"2024-07-04","symbol":"BTC","side":"SHORT","quantity":0.005,"price":42000.0,"fees":1.0,"pnl":-30.0},
+  {"date":"2024-08-12","symbol":"ETH","side":"LONG","quantity":0.3,"price":2500.0,"fees":0.6,"pnl":45.0},
+  {"date":"2023-11-15","symbol":"AAPL","side":"LONG","quantity":7,"price":120.0,"fees":1.0,"pnl":35.0},
+  {"date":"2023-12-20","symbol":"TSLA","side":"SHORT","quantity":2,"price":600.0,"fees":2.0,"pnl":-200.0}
+]
