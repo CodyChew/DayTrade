@@ -19,6 +19,7 @@ export default function App() {
   const [selectedYear, setSelectedYear] = useState('')
   const [selectedMonth, setSelectedMonth] = useState('')
   const [selectedDay, setSelectedDay] = useState('')
+  const [selectedTicker, setSelectedTicker] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -195,6 +196,19 @@ export default function App() {
     }
     return rows
   }, [rows, scope, selectedYear, selectedMonth, selectedDay])
+
+  const filteredTrades = useMemo(() => {
+    if (!selectedTicker) return filteredRows
+    return filteredRows.filter(t => (t.symbol || '').trim().toUpperCase() === selectedTicker)
+  }, [filteredRows, selectedTicker])
+
+  useEffect(() => {
+    if (!selectedTicker) return
+    const hasTicker = filteredRows.some(t => (t.symbol || '').trim().toUpperCase() === selectedTicker)
+    if (!hasTicker) {
+      setSelectedTicker('')
+    }
+  }, [filteredRows, selectedTicker])
 
   const monthly = useMemo(() => aggregateMonthly(filteredRows), [filteredRows])
   const monthlyCumulative = useMemo(() => aggregateMonthlyCumulative(filteredRows), [filteredRows])
@@ -503,7 +517,11 @@ export default function App() {
           <section className="chart-card">
             <h3>Risk vs PnL Scatter</h3>
             <div className="chart-container">
-              <RiskPnLScatter data={filteredRows} />
+              <RiskPnLScatter
+                data={filteredRows}
+                selectedTicker={selectedTicker}
+                onSelectTicker={setSelectedTicker}
+              />
             </div>
           </section>
 
@@ -537,7 +555,18 @@ export default function App() {
           ) : null}
 
           <section className="trades">
-            <h3>Trades</h3>
+            <div className="trades-header">
+              <h3>Trades</h3>
+              {selectedTicker && (
+                <button
+                  type="button"
+                  className="ticker-filter-pill"
+                  onClick={() => setSelectedTicker('')}
+                >
+                  {selectedTicker} ✕
+                </button>
+              )}
+            </div>
             <div className="trade-leaders">
               <div className="leader-card">
                 <div className="leader-title">Top Tickers by P&amp;L</div>
@@ -547,7 +576,20 @@ export default function App() {
                   <ul className="leader-list">
                     {tickerLeaders.top.map(t => (
                       <li key={t.symbol}>
-                        <span className="leader-symbol">{t.symbol}</span>
+                        <span
+                          className={`leader-symbol ticker-select ${selectedTicker === t.symbol ? 'active' : ''}`}
+                          onClick={() => setSelectedTicker(selectedTicker === t.symbol ? '' : t.symbol)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={event => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault()
+                              setSelectedTicker(selectedTicker === t.symbol ? '' : t.symbol)
+                            }
+                          }}
+                        >
+                          {t.symbol}
+                        </span>
                         <span className={`leader-pnl ${t.totalPnl >= 0 ? 'positive' : 'negative'}`}>
                           {formatPnl(t.totalPnl)}
                         </span>
@@ -565,7 +607,20 @@ export default function App() {
                   <ul className="leader-list">
                     {tickerLeaders.bottom.map(t => (
                       <li key={t.symbol}>
-                        <span className="leader-symbol">{t.symbol}</span>
+                        <span
+                          className={`leader-symbol ticker-select ${selectedTicker === t.symbol ? 'active' : ''}`}
+                          onClick={() => setSelectedTicker(selectedTicker === t.symbol ? '' : t.symbol)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={event => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault()
+                              setSelectedTicker(selectedTicker === t.symbol ? '' : t.symbol)
+                            }
+                          }}
+                        >
+                          {t.symbol}
+                        </span>
                         <span className={`leader-pnl ${t.totalPnl >= 0 ? 'positive' : 'negative'}`}>
                           {formatPnl(t.totalPnl)}
                         </span>
@@ -588,10 +643,31 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.slice().reverse().map((t, i) => (
+                {filteredTrades.slice().reverse().map((t, i) => (
                   <tr key={i}>
                     <td>{t.date}</td>
-                    <td>{(t.symbol || '').toUpperCase()}</td>
+                    <td>
+                      <span
+                        className={`ticker-select ${selectedTicker === (t.symbol || '').toUpperCase() ? 'active' : ''}`}
+                        onClick={() => {
+                          const symbol = (t.symbol || '').trim().toUpperCase()
+                          if (!symbol) return
+                          setSelectedTicker(selectedTicker === symbol ? '' : symbol)
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={event => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault()
+                            const symbol = (t.symbol || '').trim().toUpperCase()
+                            if (!symbol) return
+                            setSelectedTicker(selectedTicker === symbol ? '' : symbol)
+                          }
+                        }}
+                      >
+                        {(t.symbol || '').toUpperCase()}
+                      </span>
+                    </td>
                     <td>{t.strategy}</td>
                     <td className={t.pnl >= 0 ? 'positive' : 'negative'}>${(t.pnl || 0).toFixed(2)}</td>
                     <td className={t.roi !== undefined ? (t.roi >= 0 ? 'positive' : 'negative') : ''}>
